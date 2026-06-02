@@ -1,10 +1,15 @@
-let assert_equal expected actual =
-  if expected <> actual then
-    failwith (Printf.sprintf "expected %s, got %s" expected actual)
+let pp_level formatter level =
+  Format.pp_print_string formatter (Scribe.Level.to_string level)
 
-let assert_int_equal expected actual =
-  if expected <> actual then
-    failwith (Printf.sprintf "expected %d, got %d" expected actual)
+let level = Alcotest.testable pp_level ( = )
+
+let pp_field_value formatter = function
+  | Scribe.Field.String value -> Format.fprintf formatter "String %S" value
+  | Scribe.Field.Int value -> Format.fprintf formatter "Int %d" value
+  | Scribe.Field.Bool value -> Format.fprintf formatter "Bool %b" value
+
+let field_value = Alcotest.testable pp_field_value ( = )
+let field_pair = Alcotest.pair Alcotest.string field_value
 
 let read_file path =
   let channel = open_in_bin path in
@@ -17,9 +22,9 @@ let read_file path =
 let require_one events =
   match events with
   | [ event ] -> event
-  | events -> failwith (Printf.sprintf "expected one event, got %d" (List.length events))
+  | events -> Alcotest.failf "expected one event, got %d" (List.length events)
 
-let field_pair field = (Scribe.Field.key field, Scribe.Field.value field)
+let event_field_pair field = (Scribe.Field.key field, Scribe.Field.value field)
 
 let test_level_filtering () =
   let sink, events = Scribe.Sink.test_capture () in
@@ -30,7 +35,10 @@ let test_level_filtering () =
   Scribe.info logger "info" [];
   Scribe.debug logger "debug" [];
   let levels = List.map Scribe.Event.level (events ()) in
-  assert (levels = [ Scribe.Level.App; Scribe.Level.Error; Scribe.Level.Warning ])
+  Alcotest.(check (list level))
+    "emitted levels"
+    [ Scribe.Level.App; Scribe.Level.Error; Scribe.Level.Warning ]
+    levels
 
 let test_context_and_override () =
   let sink, events = Scribe.Sink.test_capture () in
@@ -44,13 +52,14 @@ let test_context_and_override () =
     ; Scribe.Field.int "line" 42
     ];
   let event = require_one (events ()) in
-  let fields = List.map field_pair (Scribe.Event.fields event) in
-  assert (
+  let fields = List.map event_field_pair (Scribe.Event.fields event) in
+  Alcotest.(check (list field_pair))
+    "merged fields"
+    [ ("component", Scribe.Field.String "parser")
+    ; ("request_id", Scribe.Field.String "call")
+    ; ("line", Scribe.Field.Int 42)
+    ]
     fields
-    = [ ("component", Scribe.Field.String "parser")
-      ; ("request_id", Scribe.Field.String "call")
-      ; ("line", Scribe.Field.Int 42)
-      ])
 
 let test_json_sink () =
   let path = Filename.temp_file "scribe-json-" ".log" in
@@ -65,7 +74,8 @@ let test_json_sink () =
   close_out channel;
   let output = read_file path in
   Sys.remove path;
-  assert_equal
+  Alcotest.(check string)
+    "json line"
     "{\"level\":\"warning\",\"message\":\"metadata\\nparse failed\",\"fields\":{\"reason\":\"malformed \\\"directive\\\"\",\"line\":42,\"ok\":false}}\n"
     output
 
@@ -74,8 +84,11 @@ let test_noop () =
   Scribe.info Scribe.noop "ignored" []
 
 let () =
-  test_level_filtering ();
-  test_context_and_override ();
-  test_json_sink ();
-  test_noop ();
-  assert_int_equal 1 1
+  Alcotest.run "scribe"
+    [ ( "logger"
+      , [ Alcotest.test_case "level filtering" `Quick test_level_filtering
+        ; Alcotest.test_case "context fields and override" `Quick test_context_and_override
+        ; Alcotest.test_case "noop logger" `Quick test_noop
+        ] )
+    ; ("sink", [ Alcotest.test_case "json sink" `Quick test_json_sink ])
+    ]
