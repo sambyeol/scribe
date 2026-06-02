@@ -52,7 +52,7 @@ jobs:
           dune-cache: true
 
       - name: Install dune and ocamlformat
-        run: opam install dune ocamlformat.0.29.0
+        run: opam install dune ocamlformat
 
       - name: Check formatting
         run: opam exec -- dune build @fmt
