@@ -1,4 +1,4 @@
-let noop = Scribe.Sink.make (fun _event -> ())
+let noop () = Scribe.Sink.make (fun _event -> ())
 
 let add_json_string buffer value =
   Buffer.add_char buffer '"';

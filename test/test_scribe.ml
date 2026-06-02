@@ -89,7 +89,7 @@ let test_noop () =
   Scribe.info Scribe.noop "ignored" []
 
 let test_noop_sink () =
-  let logger = Scribe.create ~level:Scribe.Level.Debug ~sink:Scribe_sinks.noop in
+  let logger = Scribe.create ~level:Scribe.Level.Debug ~sink:(Scribe_sinks.noop ()) in
   Scribe.debug logger "ignored" []
 
 let () =

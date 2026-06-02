@@ -1,7 +1,7 @@
 (** Common sinks for Scribe. *)
 
-val noop : Scribe.Sink.t
-(** A sink that discards every event. *)
+val noop : unit -> Scribe.Sink.t
+(** [noop ()] returns a sink that discards every event. *)
 
 val json_string_of_event : Scribe.Event.t -> string
 (** [json_string_of_event event] renders [event] as a compact JSON object. *)
