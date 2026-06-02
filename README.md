@@ -14,7 +14,7 @@ Use the core logger with the JSON adapter:
 let logger =
   Scribe.create
     ~level:Scribe.Level.Warning
-    ~sink:(Scribe_sinks.stderr_json ())
+    ~sink:(Scribe_sinks.Json.stderr ())
   |> Scribe.with_field (Scribe.Field.string "component" "mir.parser")
 
 let () =
@@ -36,7 +36,7 @@ The JSON sink writes one object per line:
 
 ```ocaml
 let logger =
-  Scribe.create ~level:Scribe.Level.Info ~sink:(Scribe_sinks.stderr_json ())
+  Scribe.create ~level:Scribe.Level.Info ~sink:(Scribe_sinks.Json.stderr ())
   |> Scribe.with_field (Scribe.Field.string "component" "worker")
 
 let job_logger =
