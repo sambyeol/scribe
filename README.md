@@ -29,10 +29,6 @@ Then depend on the libraries from your dune file:
 
 Use the core logger with the JSON adapter:
 
-```
-(libraries scribe scribe.sinks)
-```
-
 ```ocaml
 let logger =
   Scribe.create
