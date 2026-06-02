@@ -69,7 +69,7 @@ let test_context_and_override () =
 let test_json_sink () =
   let path = Filename.temp_file "scribe-json-" ".log" in
   let channel = open_out_bin path in
-  let sink = Scribe_json.channel channel in
+  let sink = Scribe_sinks.json channel in
   let logger = Scribe.create ~level:Scribe.Level.Warning ~sink in
   Scribe.warn logger "metadata\nparse failed"
     [ Scribe.Field.string "reason" "malformed \"directive\""
@@ -88,6 +88,10 @@ let test_noop () =
   Scribe.warn Scribe.noop "ignored" [ Scribe.Field.string "component" "test" ];
   Scribe.info Scribe.noop "ignored" []
 
+let test_noop_sink () =
+  let logger = Scribe.create ~level:Scribe.Level.Debug ~sink:Scribe_sinks.noop in
+  Scribe.debug logger "ignored" []
+
 let () =
   Alcotest.run "scribe"
     [ ( "logger"
@@ -95,5 +99,8 @@ let () =
         ; Alcotest.test_case "context fields and override" `Quick test_context_and_override
         ; Alcotest.test_case "noop logger" `Quick test_noop
         ] )
-    ; ("sink", [ Alcotest.test_case "json sink" `Quick test_json_sink ])
+    ; ( "sink"
+      , [ Alcotest.test_case "json sink" `Quick test_json_sink
+        ; Alcotest.test_case "noop sink" `Quick test_noop_sink
+        ] )
     ]

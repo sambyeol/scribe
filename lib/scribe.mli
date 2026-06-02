@@ -63,9 +63,6 @@ module Sink : sig
 
   val make : (Event.t -> unit) -> t
   (** [make emit] creates a sink from an event callback. *)
-
-  val noop : t
-  (** A sink that discards every event. *)
 end
 
 type t

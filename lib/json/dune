@@ -1,4 +1,0 @@
-(library
- (name scribe_json)
- (public_name scribe.json)
- (libraries scribe))
