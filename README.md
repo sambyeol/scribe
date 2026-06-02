@@ -2,13 +2,32 @@
 
 `scribe` is a small structured logging library for OCaml. A logger is an ordinary value that carries its level, sink, and context fields, so application code can compose loggers and library code can accept `?logger` without touching process-wide logging state.
 
+## Installation
+
+`scribe` is distributed through Git tags; pin it with opam.
+
+Pin the latest release:
+
+```sh
+LATEST=$(git ls-remote --tags --refs --sort=-v:refname https://github.com/sambyeol/scribe.git | head -n1 | sed 's|.*/||')
+opam pin add scribe "https://github.com/sambyeol/scribe.git#$LATEST"
+```
+
+Or pin a specific version:
+
+```sh
+opam pin add scribe "https://github.com/sambyeol/scribe.git#v0.1.0"
+```
+
+Then depend on the libraries from your dune file:
+
+```
+(libraries scribe scribe.sinks)
+```
+
 ## Quick Start
 
 Use the core logger with the JSON adapter:
-
-```lisp
-(libraries scribe scribe.sinks)
-```
 
 ```ocaml
 let logger =
