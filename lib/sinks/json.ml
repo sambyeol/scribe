@@ -1,5 +1,3 @@
-let noop () = Scribe.Sink.make (fun _event -> ())
-
 let add_json_string buffer value =
   Buffer.add_char buffer '"';
   String.iter
@@ -33,7 +31,7 @@ let add_fields buffer fields =
     fields;
   Buffer.add_char buffer '}'
 
-let json_string_of_event event =
+let string_of_event event =
   let buffer = Buffer.create 128 in
   Buffer.add_string buffer "{\"level\":";
   add_json_string buffer (Scribe.Level.to_string (Scribe.Event.level event));
@@ -44,10 +42,10 @@ let json_string_of_event event =
   Buffer.add_char buffer '}';
   Buffer.contents buffer
 
-let json output =
+let channel output =
   Scribe.Sink.make (fun event ->
-    output_string output (json_string_of_event event);
+    output_string output (string_of_event event);
     output_char output '\n';
     flush output)
 
-let stderr_json () = json stderr
+let stderr () = channel stderr

@@ -69,7 +69,7 @@ let test_context_and_override () =
 let test_json_sink () =
   let path = Filename.temp_file "scribe-json-" ".log" in
   let channel = open_out_bin path in
-  let sink = Scribe_sinks.json channel in
+  let sink = Scribe_sinks.Json.channel channel in
   let logger = Scribe.create ~level:Scribe.Level.Warning ~sink in
   Scribe.warn logger "metadata\nparse failed"
     [ Scribe.Field.string "reason" "malformed \"directive\""
@@ -89,7 +89,7 @@ let test_noop () =
   Scribe.info Scribe.noop "ignored" []
 
 let test_noop_sink () =
-  let logger = Scribe.create ~level:Scribe.Level.Debug ~sink:(Scribe_sinks.noop ()) in
+  let logger = Scribe.create ~level:Scribe.Level.Debug ~sink:(Scribe_sinks.Noop.create ()) in
   Scribe.debug logger "ignored" []
 
 let () =
