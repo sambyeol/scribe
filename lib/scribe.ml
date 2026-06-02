@@ -70,7 +70,6 @@ type t =
   ; fields : Field.t list
   }
 
-let noop = { level = Level.Debug; sink = Sink.make (fun _event -> ()); fields = [] }
 let create ~level ~sink = { level; sink; fields = [] }
 let with_field field logger = { logger with fields = logger.fields @ [ field ] }
 let with_fields fields logger = { logger with fields = logger.fields @ fields }

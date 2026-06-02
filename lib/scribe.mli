@@ -1,6 +1,6 @@
 (** Value-based structured logging.
 
-    A [t] logger is an ordinary value that carries its own level, sink, and context fields. Library code can accept an optional logger and default to [noop] without touching process-wide logging state. *)
+    A [t] logger is an ordinary value that carries its own level, sink, and context fields, so logging never touches process-wide state. Library code can accept an optional logger and fall back to one backed by a discarding sink. *)
 
 module Level : sig
   (** Log verbosity.
@@ -73,9 +73,6 @@ end
 
 (** A logger value. *)
 type t
-
-(** A logger that discards every event. *)
-val noop : t
 
 (** [create ~level ~sink] creates a logger with no context fields. *)
 val create : level:Level.t -> sink:Sink.t -> t

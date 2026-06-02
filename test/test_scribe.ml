@@ -96,11 +96,6 @@ let test_json_sink () =
     output
 ;;
 
-let test_noop () =
-  Scribe.warn Scribe.noop "ignored" [ Scribe.Field.string "component" "test" ];
-  Scribe.info Scribe.noop "ignored" []
-;;
-
 let test_noop_sink () =
   let logger =
     Scribe.create ~level:Scribe.Level.Debug ~sink:(Scribe_sinks.Noop.create ())
@@ -117,7 +112,6 @@ let () =
             "context fields and override"
             `Quick
             test_context_and_override
-        ; Alcotest.test_case "noop logger" `Quick test_noop
         ] )
     ; ( "sink"
       , [ Alcotest.test_case "json sink" `Quick test_json_sink
