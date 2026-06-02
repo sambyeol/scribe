@@ -1,4 +1,4 @@
 (library
  (name scribe_sinks)
  (public_name scribe.sinks)
- (libraries scribe))
+ (libraries scribe yojson))
