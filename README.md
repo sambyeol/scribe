@@ -21,7 +21,7 @@ opam pin add scribe "https://github.com/sambyeol/scribe.git#v0.1.0"
 
 Then depend on the libraries from your dune file:
 
-```lisp
+```
 (libraries scribe scribe.sinks)
 ```
 
@@ -29,7 +29,7 @@ Then depend on the libraries from your dune file:
 
 Use the core logger with the JSON adapter:
 
-```lisp
+```
 (libraries scribe scribe.sinks)
 ```
 
