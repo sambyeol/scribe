@@ -62,19 +62,3 @@ let job_logger =
   logger
   |> Scribe.with_field (Scribe.Field.string "job_id" job_id)
 ```
-
-## Library-Friendly Use
-
-Libraries should accept an optional logger and default to `Scribe.noop`.
-
-```ocaml
-let parse ?(logger = Scribe.noop) path =
-  Scribe.debug logger "parse started"
-    [ Scribe.Field.string "file" path ];
-  (* parsing work *)
-  ()
-```
-
-## MVP Scope
-
-The first version focuses on value-based structured logging and a small sink collection with noop and JSON lines sinks. Other logging adapters are intentionally left out of the MVP.
