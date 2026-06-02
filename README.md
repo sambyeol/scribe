@@ -7,14 +7,14 @@
 Use the core logger with the JSON adapter:
 
 ```lisp
-(libraries scribe scribe.json)
+(libraries scribe scribe.sinks)
 ```
 
 ```ocaml
 let logger =
   Scribe.create
     ~level:Scribe.Level.Warning
-    ~sink:(Scribe_json.stderr ())
+    ~sink:(Scribe_sinks.stderr_json ())
   |> Scribe.with_field (Scribe.Field.string "component" "mir.parser")
 
 let () =
@@ -36,7 +36,7 @@ The JSON sink writes one object per line:
 
 ```ocaml
 let logger =
-  Scribe.create ~level:Scribe.Level.Info ~sink:(Scribe_json.stderr ())
+  Scribe.create ~level:Scribe.Level.Info ~sink:(Scribe_sinks.stderr_json ())
   |> Scribe.with_field (Scribe.Field.string "component" "worker")
 
 let job_logger =
@@ -58,4 +58,4 @@ let parse ?(logger = Scribe.noop) path =
 
 ## MVP Scope
 
-The first version focuses on value-based structured logging and a small JSON lines adapter. Other logging adapters are intentionally left out of the MVP.
+The first version focuses on value-based structured logging and a small sink collection with noop and JSON lines sinks. Other logging adapters are intentionally left out of the MVP.
