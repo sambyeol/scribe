@@ -1,0 +1,3 @@
+(library
+ (name scribe)
+ (public_name scribe))
