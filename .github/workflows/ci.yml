@@ -51,11 +51,8 @@ jobs:
           ocaml-compiler: "5.4"
           dune-cache: true
 
-      - name: Install dependencies
-        run: opam install . --deps-only
-
-      - name: Install formatter
-        run: opam install ocamlformat.0.29.0
+      - name: Install dune and ocamlformat
+        run: opam install dune ocamlformat
 
       - name: Check formatting
         run: opam exec -- dune build @fmt
