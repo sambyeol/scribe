@@ -13,6 +13,7 @@ bug-reports: "https://github.com/sambyeol/scribe/issues"
 depends: [
   "ocaml" {>= "4.14"}
   "dune" {>= "3.23"}
+  "yojson"
   "alcotest" {with-test}
   "odoc" {with-doc}
 ]

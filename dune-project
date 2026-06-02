@@ -22,6 +22,7 @@
  (depends
   (ocaml (>= 4.14))
   (dune (>= 3.23))
+  yojson
   (alcotest :with-test))
  (tags
   ("logging" "structured-logging" "json" "library")))
