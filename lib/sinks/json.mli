@@ -1,10 +1,10 @@
 (** JSON line sinks. *)
 
-val string_of_event : Scribe.Event.t -> string
 (** [string_of_event event] renders [event] as a compact JSON object. *)
+val string_of_event : Scribe.Event.t -> string
 
-val channel : out_channel -> Scribe.Sink.t
 (** [channel output] writes each event as one JSON object followed by a newline, then flushes [output]. *)
+val channel : out_channel -> Scribe.Sink.t
 
-val stderr : unit -> Scribe.Sink.t
 (** [stderr ()] writes JSON lines to standard error. *)
+val stderr : unit -> Scribe.Sink.t

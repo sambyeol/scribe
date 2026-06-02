@@ -7,93 +7,99 @@ module Level : sig
 
       Levels are ordered from least verbose to most verbose: [App], [Error], [Warning], [Info], then [Debug]. A logger configured at [Warning] emits [App], [Error], and [Warning] events, and filters [Info] and [Debug]. *)
 
-  type t = App | Error | Warning | Info | Debug
-  (** The level of a log event. *)
+  type t =
+    | App
+    | Error
+    | Warning
+    | Info
+    | Debug
 
-  val to_string : t -> string
   (** [to_string level] returns the stable lowercase representation used by JSON sinks. *)
+  val to_string : t -> string
 end
 
 module Field : sig
   (** Structured fields attached to log events. *)
 
-  type value = String of string | Int of int | Bool of bool
-  (** Supported field values. *)
+  type value =
+    | String of string
+    | Int of int
+    | Bool of bool
 
-  type t
   (** A key-value field. *)
+  type t
 
-  val string : string -> string -> t
   (** [string key value] creates a string field. *)
+  val string : string -> string -> t
 
-  val int : string -> int -> t
   (** [int key value] creates an integer field. *)
+  val int : string -> int -> t
 
-  val bool : string -> bool -> t
   (** [bool key value] creates a boolean field. *)
+  val bool : string -> bool -> t
 
-  val key : t -> string
   (** [key field] returns the field key. *)
+  val key : t -> string
 
-  val value : t -> value
   (** [value field] returns the field value. *)
+  val value : t -> value
 end
 
 module Event : sig
   (** Events delivered to sinks. *)
 
-  type t
   (** A fully materialized log event. *)
+  type t
 
-  val level : t -> Level.t
   (** [level event] returns the event level. *)
+  val level : t -> Level.t
 
-  val message : t -> string
   (** [message event] returns the event message. *)
+  val message : t -> string
 
-  val fields : t -> Field.t list
   (** [fields event] returns merged context and call-site fields. *)
+  val fields : t -> Field.t list
 end
 
 module Sink : sig
   (** Event destinations. *)
 
-  type t
   (** A sink consumes emitted events. *)
+  type t
 
-  val make : (Event.t -> unit) -> t
   (** [make emit] creates a sink from an event callback. *)
+  val make : (Event.t -> unit) -> t
 end
 
-type t
 (** A logger value. *)
+type t
 
-val noop : t
 (** A logger that discards every event. *)
+val noop : t
 
-val create : level:Level.t -> sink:Sink.t -> t
 (** [create ~level ~sink] creates a logger with no context fields. *)
+val create : level:Level.t -> sink:Sink.t -> t
 
-val with_field : Field.t -> t -> t
 (** [with_field field logger] returns [logger] with [field] appended to its context. *)
+val with_field : Field.t -> t -> t
 
-val with_fields : Field.t list -> t -> t
 (** [with_fields fields logger] returns [logger] with [fields] appended to its context in order. *)
+val with_fields : Field.t list -> t -> t
 
-val log : t -> Level.t -> string -> Field.t list -> unit
 (** [log logger level message fields] emits an event when [level] is enabled for [logger]. Logger context fields are merged before call-site [fields], and later fields override earlier fields with the same key. *)
+val log : t -> Level.t -> string -> Field.t list -> unit
 
-val app : t -> string -> Field.t list -> unit
 (** Emit an application-level event. *)
+val app : t -> string -> Field.t list -> unit
 
-val error : t -> string -> Field.t list -> unit
 (** Emit an error event. *)
+val error : t -> string -> Field.t list -> unit
 
-val warn : t -> string -> Field.t list -> unit
 (** Emit a warning event. *)
+val warn : t -> string -> Field.t list -> unit
 
-val info : t -> string -> Field.t list -> unit
 (** Emit an informational event. *)
+val info : t -> string -> Field.t list -> unit
 
-val debug : t -> string -> Field.t list -> unit
 (** Emit a debug event. *)
+val debug : t -> string -> Field.t list -> unit

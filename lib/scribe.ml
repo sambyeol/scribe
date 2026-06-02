@@ -1,5 +1,10 @@
 module Level = struct
-  type t = App | Error | Warning | Info | Debug
+  type t =
+    | App
+    | Error
+    | Warning
+    | Info
+    | Debug
 
   let rank = function
     | App -> 0
@@ -7,6 +12,7 @@ module Level = struct
     | Warning -> 2
     | Info -> 3
     | Debug -> 4
+  ;;
 
   let enabled ~configured level = rank level <= rank configured
 
@@ -16,11 +22,19 @@ module Level = struct
     | Warning -> "warning"
     | Info -> "info"
     | Debug -> "debug"
+  ;;
 end
 
 module Field = struct
-  type value = String of string | Int of int | Bool of bool
-  type t = { key : string; value : value }
+  type value =
+    | String of string
+    | Int of int
+    | Bool of bool
+
+  type t =
+    { key : string
+    ; value : value
+    }
 
   let make key value = { key; value }
   let string key value = make key (String value)
@@ -65,17 +79,21 @@ let merge_fields logger_fields call_fields =
   let seen = Hashtbl.create 16 in
   let merge acc field =
     let key = Field.key field in
-    if Hashtbl.mem seen key then acc
+    if Hashtbl.mem seen key
+    then acc
     else (
       Hashtbl.add seen key ();
       field :: acc)
   in
   List.fold_left merge [] (List.rev_append call_fields (List.rev logger_fields))
+;;
 
 let log logger level message fields =
-  if Level.enabled ~configured:logger.level level then
+  if Level.enabled ~configured:logger.level level
+  then (
     let fields = merge_fields logger.fields fields in
-    Sink.emit logger.sink (Event.make ~level ~message ~fields)
+    Sink.emit logger.sink (Event.make ~level ~message ~fields))
+;;
 
 let app logger message fields = log logger Level.App message fields
 let error logger message fields = log logger Level.Error message fields
