@@ -26,8 +26,13 @@ let require_one events =
 
 let event_field_pair field = (Scribe.Field.key field, Scribe.Field.value field)
 
+let capture_sink () =
+  let events = ref [] in
+  let sink = Scribe.Sink.make (fun event -> events := event :: !events) in
+  (sink, fun () -> List.rev !events)
+
 let test_level_filtering () =
-  let sink, events = Scribe.Sink.test_capture () in
+  let sink, events = capture_sink () in
   let logger = Scribe.create ~level:Scribe.Level.Warning ~sink in
   Scribe.app logger "app" [];
   Scribe.error logger "error" [];
@@ -41,7 +46,7 @@ let test_level_filtering () =
     levels
 
 let test_context_and_override () =
-  let sink, events = Scribe.Sink.test_capture () in
+  let sink, events = capture_sink () in
   let logger =
     Scribe.create ~level:Scribe.Level.Debug ~sink
     |> Scribe.with_field (Scribe.Field.string "component" "parser")
@@ -64,7 +69,7 @@ let test_context_and_override () =
 let test_json_sink () =
   let path = Filename.temp_file "scribe-json-" ".log" in
   let channel = open_out_bin path in
-  let sink = Scribe.Sink.channel_json channel in
+  let sink = Scribe_json.channel channel in
   let logger = Scribe.create ~level:Scribe.Level.Warning ~sink in
   Scribe.warn logger "metadata\nparse failed"
     [ Scribe.Field.string "reason" "malformed \"directive\""

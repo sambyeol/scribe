@@ -49,62 +49,6 @@ module Sink = struct
   let make emit = emit
   let noop _event = ()
   let emit sink event = sink event
-
-  let add_json_string buffer value =
-    Buffer.add_char buffer '"';
-    String.iter
-      (fun char ->
-        match char with
-        | '"' -> Buffer.add_string buffer "\\\""
-        | '\\' -> Buffer.add_string buffer "\\\\"
-        | '\b' -> Buffer.add_string buffer "\\b"
-        | '\012' -> Buffer.add_string buffer "\\f"
-        | '\n' -> Buffer.add_string buffer "\\n"
-        | '\r' -> Buffer.add_string buffer "\\r"
-        | '\t' -> Buffer.add_string buffer "\\t"
-        | char when Char.code char < 0x20 -> Buffer.add_string buffer (Printf.sprintf "\\u%04x" (Char.code char))
-        | char -> Buffer.add_char buffer char)
-      value;
-    Buffer.add_char buffer '"'
-
-  let add_json_value buffer = function
-    | Field.String value -> add_json_string buffer value
-    | Field.Int value -> Buffer.add_string buffer (string_of_int value)
-    | Field.Bool value -> Buffer.add_string buffer (string_of_bool value)
-
-  let add_fields buffer fields =
-    Buffer.add_char buffer '{';
-    List.iteri
-      (fun index field ->
-        if index > 0 then Buffer.add_char buffer ',';
-        add_json_string buffer (Field.key field);
-        Buffer.add_char buffer ':';
-        add_json_value buffer (Field.value field))
-      fields;
-    Buffer.add_char buffer '}'
-
-  let event_to_json event =
-    let buffer = Buffer.create 128 in
-    Buffer.add_string buffer "{\"level\":";
-    add_json_string buffer (Level.to_string (Event.level event));
-    Buffer.add_string buffer ",\"message\":";
-    add_json_string buffer (Event.message event);
-    Buffer.add_string buffer ",\"fields\":";
-    add_fields buffer (Event.fields event);
-    Buffer.add_char buffer '}';
-    Buffer.contents buffer
-
-  let channel_json channel event =
-    output_string channel (event_to_json event);
-    output_char channel '\n';
-    flush channel
-
-  let stderr_json () = channel_json stderr
-
-  let test_capture () =
-    let events = ref [] in
-    let sink event = events := event :: !events in
-    (sink, fun () -> List.rev !events)
 end
 
 type t =

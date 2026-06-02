@@ -66,15 +66,6 @@ module Sink : sig
 
   val noop : t
   (** A sink that discards every event. *)
-
-  val channel_json : out_channel -> t
-  (** [channel_json channel] writes each event as one JSON object followed by a newline, then flushes [channel]. *)
-
-  val stderr_json : unit -> t
-  (** [stderr_json ()] writes JSON lines to [stderr]. *)
-
-  val test_capture : unit -> t * (unit -> Event.t list)
-  (** [test_capture ()] returns a sink and a snapshot function for assertions. Events are returned in emission order. *)
 end
 
 type t
